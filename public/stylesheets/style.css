@@ -1,0 +1,21 @@
+body {
+  background-color: #ffe6e6
+}
+
+#DC {
+	font-weight:bold;
+	color: white;
+	background-color: green;
+}
+
+#GA {
+	font-weight:bold;
+	color: white;
+	background-color: yellow;
+}
+
+#AD {
+	font-weight:bold;
+	color: white;
+	background-color: blue;
+}
