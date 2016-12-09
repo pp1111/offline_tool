@@ -4,29 +4,26 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 mongoose.Promise = require('q').Promise;
-
+mongoose.connect(`mongodb://localhost/localhost:3000`);
 const q = require('q');
 const Analytics = require('../models/analytics');
+const AdWords = require('../models/adWords');
+const DoubleClick = require('../models/doubleClick');
 
 let api = {
-    get: {
-        list: (req, res, next) => q.async(function* () {
-            yield mongoose.connect(`mongodb://localhost/${req.get('host')}`);
+    analytics: {
+        getList: (req, res, next) => q.async(function* () {
             let users = yield Analytics.find({});
-            yield mongoose.disconnect();
             res.send(users);
         })().catch(next).done(),
-        user: (req, res, next) => q.async(function* () {
-            yield mongoose.connect(`mongodb://localhost/${req.get('host')}`);
+        get: (req, res, next) => q.async(function* () {
             let user = yield Analytics.findOne({ cid: req.params.cid });
-            yield mongoose.disconnect();
             res.send(user);
         })().catch(next).done(),
-    },
+        post: (req, res, next) => q.async(function* () {
 
-    edit: {
-        user: (req, res, next) => q.async(function* () {
-            yield mongoose.connect(`mongodb://localhost/${req.get('host')}`);
+        })().catch(next).done(),
+        put: (req, res, next) => q.async(function* () {
             let cid = req.params.cid;
             let user = req.body;
             yield Analytics.update(
@@ -41,22 +38,69 @@ let api = {
                 { multi: true }
             )
 
-            yield mongoose.disconnect();
+        })().catch(next).done(),
+    },
+    adWords: {
+        getList : (req, res, next) => q.async(function* () {
+            let users = yield AdWords.find({});
+            res.send(users);
+        })().catch(next).done(),
+        get : (req, res, next) => q.async(function* () {
+            let user = yield AdWords.findOne({ cid: req.params.cid });
+            res.send(user);
+        })().catch(next).done(),
+        post : (req, res, next) => q.async(function* () {
+        
+        })().catch(next).done(),
+        put: (req, res, next) => q.async(function* () {
+            let cid = req.params.cid;
+            let user = req.body;
+            yield AdWords.update(
+                { cid: cid },
+                { 
+                    $set: { 
+                        v: req.body.v,
+                        t: req.body.t,
+                        tid: req.body.tid,
+                    }
+                },
+                { multi: true }
+            )
+
+        })().catch(next).done(),
+    },
+    doubleClick: {
+        getList : (req, res, next) => q.async(function* () {
+            let users = yield DoubleClick.find({});
+            res.send(users);
+        })().catch(next).done(),
+        get : (req, res, next) => q.async(function* () {
+            let user = yield DoubleClick.findOne({ cid: req.params.cid });
+            res.send(user);
+        })().catch(next).done(),
+        post : (req, res, next) => q.async(function* () {
+        
+        })().catch(next).done(),
+        put: (req, res, next) => q.async(function* () {
+            let cid = req.params.cid;
+            let user = req.body;
+            yield DoubleClick.update(
+                { cid: cid },
+                { 
+                    $set: { 
+                        v: req.body.v,
+                        t: req.body.t,
+                        tid: req.body.tid,
+                    }
+                },
+                { multi: true }
+            )
+
         })().catch(next).done(),
     },
 
     post: {
-        adWords: (req, res, next) => q.async(function* () {
-            res.end('adWords');
-        })().catch(next).done(),
-        doubleClick: (req, res, next) => q.async(function* () {
-
-        })().catch(next).done(),
-        analytics: (req, res, next) => q.async(function* () {
-            res.end('analytics');
-        })().catch(next).done(),
         remote: (req, res, next) => q.async(function* () {
-            yield mongoose.connect(`mongodb://localhost/${req.get('host')}`);
             let user = {
                 gclid: req.body.gclid || null,
                 cid: req.body._ga,
@@ -64,26 +108,39 @@ let api = {
             };
 
             yield Analytics.create(user);
-            yield mongoose.disconnect();
+            yield AdWords.create(user);
+            yield DoubleClick.create(user);
+
             res.status(204);
+        })().catch(next).done(),
+        doubleClick: (req, res, next) => q.async(function* () {
+
         })().catch(next).done(),
     }
 }
 
 /* GET home page. */
+
+router.get('/analytics', api.analytics.getList);
+router.get('/analytics/:cid', api.analytics.get);
+router.post('/analytics', api.analytics.post);
+router.put('/analytics/:cid', api.analytics.put);
+
+router.get('/adWords', api.adWords.getList);
+router.get('/adWords/:cid', api.adWords.get);
+router.post('/adWords', api.adWords.post);
+router.put('/adWords/:cid', api.adWords.put);
+
+router.get('/doubleClick', api.doubleClick.getList);
+router.get('/doubleClick/:cid', api.doubleClick.get);
+router.post('/doubleClick', api.doubleClick.post);
+router.put('/doubleClick/:cid', api.doubleClick.put);
+
+router.post('/ids', api.post.remote);
+
 router.get('/', (req, res, next) => {
     res.sendfile('./views/main.html');
 });
-
-router.get('/users', api.get.list);
-router.get('/users/:cid', api.get.user);
-
-router.put('/users/:cid', api.edit.user);
-
-router.post('/adWords', api.post.adWords);
-router.post('/doubleClick', api.post.doubleClick);
-router.post('/analytics', api.post.analytics);
-router.post('/ids', api.post.remote);
 
 
 module.exports = router;

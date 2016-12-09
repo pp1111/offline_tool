@@ -16,7 +16,7 @@ let AnalyticsSchema = new mongoose.Schema(
 
 AnalyticsSchema.plugin(timestampsPlugin, { createdAt: 'created', updatedAt: 'modified' });
 
-let user = mongoose.model('user', AnalyticsSchema);
+let user = mongoose.model('adWords', AnalyticsSchema);
 
 AnalyticsSchema.statics.create = function (userIds) {
     const user = new User({
