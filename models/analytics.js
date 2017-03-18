@@ -11,6 +11,7 @@ let AnalyticsSchema = new mongoose.Schema(
         v: { type: String, required: false },
         t: { type: String, required: false },
         tid: { type: String, required: false },
+        state: { type: String, required: false },
     }, { collection: 'analytics' }
 );
 
