@@ -105,6 +105,9 @@ let api = {
                 gclid: req.body.gclid || null,
                 cid: req.body._ga.substring(6),
                 tcid: req.body.transactionId,
+                utm_source: req.body.utm_source,
+                utm_medium: req.body.utm_medium,
+                utm_campaign: req.body.utm_campaign,
             };
 
             yield Analytics.create(user);

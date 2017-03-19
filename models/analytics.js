@@ -12,6 +12,9 @@ let AnalyticsSchema = new mongoose.Schema(
         t: { type: String, required: false },
         tid: { type: String, required: false },
         state: { type: String, required: false },
+        utm_source: { type: String, required: false },
+        utm_medium: { type: String, required: false },
+        utm_campaign: { type: String, required: false}
     }, { collection: 'analytics' }
 );
 
