@@ -103,7 +103,7 @@ let api = {
         remote: (req, res, next) => q.async(function* () {
             let user = {
                 gclid: req.body.gclid || null,
-                cid: req.body._ga,
+                cid: req.body._ga.substring(6),
                 tcid: req.body.transactionId,
             };
 
