@@ -9,6 +9,7 @@ const q = require('q');
 const Analytics = require('../models/analytics');
 const AdWords = require('../models/adWords');
 const DoubleClick = require('../models/doubleClick');
+const querystring = require('querystring');
 
 let api = {
     analytics: {
@@ -99,23 +100,22 @@ let api = {
         })().catch(next).done(),
     },
 
-    post: {
+    get: {
         remote: (req, res, next) => q.async(function* () {
+            console.log(req.query);
             let user = {
-                gclid: req.body.gclid || null,
-                cid: req.body._ga.substring(6),
-                tcid: req.body.transactionId,
-                utm_source: req.body.utm_source,
-                utm_medium: req.body.utm_medium,
-                utm_campaign: req.body.utm_campaign,
+                gclid: req.query.gclid || null,
+                cid: req.query._ga.substring(6),
+                tcid: req.query.tcid,
+                utm_source: req.query.utm_source,
+                utm_medium: req.query.utm_medium,
+                utm_campaign: req.query.utm_campaign,
             };
 
             yield Analytics.create(user);
-            yield AdWords.create(user);
-            yield DoubleClick.create(user);
 
-            res.status(204);
-        })().catch(next).done(),
+            res.status(200).end();
+        })().catch(err => console.log(err)).done(),
         doubleClick: (req, res, next) => q.async(function* () {
 
         })().catch(next).done(),
@@ -139,7 +139,7 @@ router.get('/doubleClick/:cid', api.doubleClick.get);
 router.post('/doubleClick', api.doubleClick.post);
 router.put('/doubleClick/:cid', api.doubleClick.put);
 
-router.post('/ids', api.post.remote);
+router.get('/tracking/:tracking_data', api.get.remote);
 
 router.get('/', (req, res, next) => {
     res.sendfile('./views/main.html');
